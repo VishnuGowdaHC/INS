@@ -14,7 +14,7 @@ from typing import Dict, Any
 import tiger
 import avalanche
 
-PORT = 8000
+PORT = int(os.environ.get("PORT", 8000))
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend")
 
 
@@ -159,15 +159,24 @@ class TigerAPIHandler(SimpleHTTPRequestHandler):
             self._send_json(500, {"error": str(e)})
 
 
-def run_server(port: int = PORT, host: str = "127.0.0.1") -> None:
+def run_server(port: int = None, host: str = None) -> None:
     """Starts the Tiger-192 HTTP web server."""
-    # Ensure frontend directory exists
     os.makedirs(FRONTEND_DIR, exist_ok=True)
+
+    if port is None:
+        port = int(os.environ.get("PORT", PORT))
+    if host is None:
+        host = os.environ.get("HOST", "0.0.0.0")
 
     # Attempt to bind to requested port or fallback to alternatives
     chosen_port = port
     server = None
-    for p in [chosen_port, chosen_port + 1, chosen_port + 80, 8080, 5000]:
+    ports_to_try = [chosen_port]
+    # Only try fallbacks if not running in a container/cloud environment where PORT is strictly assigned
+    if "PORT" not in os.environ:
+        ports_to_try.extend([chosen_port + 1, chosen_port + 80, 8080, 5000])
+
+    for p in ports_to_try:
         try:
             server = ThreadingHTTPServer((host, p), TigerAPIHandler)
             chosen_port = p
@@ -179,10 +188,12 @@ def run_server(port: int = PORT, host: str = "127.0.0.1") -> None:
         print(f"Error: Could not bind to port {port} or fallback ports.")
         sys.exit(1)
 
-    url = f"http://{host}:{chosen_port}"
+    display_host = "localhost" if host == "0.0.0.0" else host
+    url = f"http://{display_host}:{chosen_port}"
     print(f"\n=======================================================")
     print(f"  Tiger-192 Avalanche Explorer Web Server Running!")
-    print(f"  URL: {url}")
+    print(f"  Listening on: {host}:{chosen_port}")
+    print(f"  Local URL:    {url}")
     print(f"  API Docs:")
     print(f"    - GET  {url}/api/health")
     print(f"    - GET  {url}/api/test-vectors")
@@ -201,5 +212,6 @@ def run_server(port: int = PORT, host: str = "127.0.0.1") -> None:
 
 
 if __name__ == "__main__":
-    cli_port = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else PORT
+    cli_port = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else None
     run_server(port=cli_port)
+
