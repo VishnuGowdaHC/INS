@@ -1,0 +1,3 @@
+# Tiger-192 Hash & Avalanche Explorer
+# Built entirely with Python Standard Library. Zero external dependencies required!
+# Python 3.8+ compatible.

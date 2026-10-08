@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiger-192 Hash - Avalanche Effect</title>
+  <meta name="description" content="Tiger-192 cryptographic hash function and avalanche effect demonstration.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-top">
+        <div>
+          <h1 class="app-title">Tiger-192 Hash</h1>
+          <p class="app-subtitle">Strict Avalanche Criterion Visualizer</p>
+        </div>
+        <div class="system-status">
+          <span class="status-dot"></span>
+          <span id="system-status-text">Cryptographic Engine Active</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-avalanche" id="tab-btn-avalanche">Avalanche Comparison</button>
+        <button class="tab-btn" data-tab="tab-hashes" id="tab-btn-hashes">Hashes and Binary</button>
+        <button class="tab-btn" data-tab="tab-stats" id="tab-btn-stats">Statistical Simulation</button>
+        <button class="tab-btn" data-tab="tab-test" id="tab-btn-test">Self-Test Vectors</button>
+      </nav>
+    </header>
+
+    <!-- Main Viewport (100vh fit, no page scroll) -->
+    <main class="app-main">
+
+      <!-- ============================================================== -->
+      <!-- TAB 1: AVALANCHE COMPARISON -->
+      <!-- ============================================================== -->
+      <section class="tab-pane active" id="tab-avalanche">
+        <!-- Message Inputs Side by Side -->
+        <div class="inputs-row">
+          <div class="input-card">
+            <div class="card-meta">
+              <label for="msg1" class="card-label">Message 1 (Original)</label>
+              <span class="char-badge" id="msg1-count">43 chars</span>
+            </div>
+            <textarea id="msg1" class="text-box" rows="2" spellcheck="false" placeholder="Type first message...">The quick brown fox jumps over the lazy dog</textarea>
+          </div>
+
+          <div class="input-card">
+            <div class="card-meta">
+              <label for="msg2" class="card-label">Message 2 (Modified)</label>
+              <span class="char-badge" id="msg2-count">43 chars</span>
+            </div>
+            <textarea id="msg2" class="text-box" rows="2" spellcheck="false" placeholder="Type second message...">The quick brown fox jumps over the lazy eog</textarea>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-row">
+          <button id="btn-flip-char" class="action-btn">Change 1 Character</button>
+          <button id="btn-flip-bit" class="action-btn">Flip 1 Bit</button>
+          <button id="btn-clone-m1" class="action-btn">Clone Message 1</button>
+          <button id="btn-reset" class="action-btn">Reset Default</button>
+          <span class="live-calc-badge" id="calc-time-badge">Live: Computed in 0.5ms</span>
+        </div>
+
+        <!-- Verdict Banner (Dynamically Calculated) -->
+        <div class="verdict-banner" id="verdict-banner">
+          <div class="verdict-col">
+            <span class="verdict-sub">Input Alteration:</span>
+            <span class="verdict-main" id="verdict-input-change">Computing...</span>
+          </div>
+          <div class="verdict-col divider">
+            <span class="verdict-sub">Output Flipped Bits:</span>
+            <span class="verdict-main" id="verdict-bits-flipped">- / 192 bits (-)</span>
+          </div>
+          <div class="verdict-col divider">
+            <span class="verdict-sub">Avalanche Status:</span>
+            <span class="verdict-badge" id="verdict-status-badge">Computing</span>
+          </div>
+        </div>
+
+        <!-- Smooth Progress Bar -->
+        <div class="progress-container">
+          <div class="progress-track">
+            <div class="progress-bar-fill" id="avalanche-fill" style="width: 0%;"></div>
+            <div class="progress-marker" title="Ideal 50% (96 bits)"></div>
+          </div>
+          <div class="progress-legend">
+            <span>0%</span>
+            <span class="marker-text">Target: 50.00% (96 bits)</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+        <!-- 192-Bit Difference Matrix Card -->
+        <div class="matrix-card">
+          <div class="matrix-header">
+            <div class="matrix-title-group">
+              <span class="matrix-title">192-Bit Difference Matrix</span>
+              <span class="matrix-sub">Black = differing bit; White = matching bit (Click any cell to toggle it)</span>
+            </div>
+            <div class="inspector-box" id="matrix-inspector">
+              <span>Bit: <strong id="insp-bit">#0</strong></span>
+              <span>Byte: <strong id="insp-byte">#0</strong></span>
+              <span>M1: <strong id="insp-m1">0</strong></span>
+              <span>M2: <strong id="insp-m2">0</strong></span>
+              <span>Status: <strong id="insp-status">Matching</strong></span>
+            </div>
+          </div>
+          <div class="matrix-grid" id="matrix-grid"></div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 2: HASHES AND BINARY -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="tab-hashes">
+        <div class="pane-stack">
+          <!-- Hex Hashes -->
+          <div class="info-block">
+            <div class="block-header">
+              <span class="block-title">Tiger-192 Hexadecimal Digests (48 Characters / 24 Bytes)</span>
+            </div>
+            <div class="hash-item">
+              <span class="hash-tag">Tiger(M1)</span>
+              <span class="hash-code mono" id="out-hash1">-</span>
+              <button class="copy-btn action-btn" data-target="out-hash1">Copy</button>
+            </div>
+            <div class="hash-item">
+              <span class="hash-tag">Tiger(M2)</span>
+              <span class="hash-code mono" id="out-hash2">-</span>
+              <button class="copy-btn action-btn" data-target="out-hash2">Copy</button>
+            </div>
+          </div>
+
+          <!-- Binary Bitstreams -->
+          <div class="info-block">
+            <div class="block-header">
+              <span class="block-title">Binary Bitstreams (192 Bits)</span>
+            </div>
+            <div class="bit-row">
+              <span class="bit-label">M1 Bits:</span>
+              <div class="bit-text mono" id="out-bin1">-</div>
+            </div>
+            <div class="bit-row">
+              <span class="bit-label">M2 Bits:</span>
+              <div class="bit-text mono" id="out-bin2">-</div>
+            </div>
+            <div class="bit-row">
+              <span class="bit-label">XOR Diff:</span>
+              <div class="bit-text mono" id="out-xor">-</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 3: STATISTICAL SIMULATION -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="tab-stats">
+        <div class="pane-stack">
+          <div class="controls-bar">
+            <label for="trial-count" class="card-label">Number of Trials:</label>
+            <input type="number" id="trial-count" class="num-input" value="500" min="50" max="1000" step="50">
+            <button id="btn-run-stats" class="primary-btn">Run Statistical Test</button>
+          </div>
+
+          <div class="stats-summary-card" id="stats-summary-card">
+            <div class="summary-line" id="stats-status-text">
+              Simulation ready. Click 'Run Statistical Test' to execute real mutations on Message 1.
+            </div>
+          </div>
+
+          <div class="table-container" id="stats-table-box">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Metric Name</th>
+                  <th>Observed Value</th>
+                  <th>Theoretical Target</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Total trials conducted</td>
+                  <td class="mono" id="stat-trials">-</td>
+                  <td class="mono">500</td>
+                  <td id="stat-status-trials">-</td>
+                </tr>
+                <tr>
+                  <td>Mean differing bits</td>
+                  <td class="mono" id="stat-mean">-</td>
+                  <td class="mono">96.00</td>
+                  <td id="stat-status-mean">-</td>
+                </tr>
+                <tr>
+                  <td>Standard deviation</td>
+                  <td class="mono" id="stat-stdev">-</td>
+                  <td class="mono">~6.93</td>
+                  <td id="stat-status-stdev">-</td>
+                </tr>
+                <tr>
+                  <td>Minimum differing bits</td>
+                  <td class="mono" id="stat-min">-</td>
+                  <td class="mono">-</td>
+                  <td id="stat-status-min">-</td>
+                </tr>
+                <tr>
+                  <td>Maximum differing bits</td>
+                  <td class="mono" id="stat-max">-</td>
+                  <td class="mono">-</td>
+                  <td id="stat-status-max">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 4: SELF-TEST VECTORS -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="tab-test">
+        <div class="pane-stack">
+          <div class="controls-bar">
+            <button id="btn-run-test" class="primary-btn">Verify All Test Vectors</button>
+            <span class="test-overall-badge" id="test-overall-status">Status: Ready</span>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Input Message</th>
+                  <th>Expected Hash (Anderson and Biham)</th>
+                  <th>Computed Hash</th>
+                  <th>Verification</th>
+                </tr>
+              </thead>
+              <tbody id="test-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Compact Footer -->
+    <footer class="app-footer">
+      <span>Tiger-192 Cryptographic Hash and Strict Avalanche Criterion</span>
+      <span id="footer-summary">192-bit digest (24 bytes) • 3 Passes • 512-bit block</span>
+    </footer>
+  </div>
+
+  <script src="js/tiger.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

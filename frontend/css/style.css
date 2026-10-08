@@ -1,0 +1,708 @@
+/*
+ * Tiger-192 Hash - Minimalist White and Black Single-Viewport Layout
+ * Constraints: Exactly 100vh height, zero page scrolling, tabbed navigation.
+ * Smoothed edges, fluid animations. No emojis, no em-dashes.
+ */
+
+:root {
+  --bg-page: #FFFFFF;
+  --bg-card: #FAFAFA;
+  --bg-hover: #F2F2F2;
+  --bg-dark: #111111;
+  
+  --text-main: #111111;
+  --text-muted: #666666;
+  --text-dim: #888888;
+  
+  --border-light: #E5E5E5;
+  --border-medium: #CCCCCC;
+  --border-dark: #111111;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-pill: 999px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --trans: 0.18s var(--ease);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   APP LAYOUT (100VH FLEX CONTAINER)
+   ========================================================================== */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 20px 8px;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   HEADER & TABS
+   ========================================================================== */
+.app-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.app-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.system-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-card);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--text-main);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+/* Tabs Bar */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--trans);
+  user-select: none;
+}
+
+.tab-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-main);
+}
+
+.tab-btn.active {
+  background-color: var(--bg-dark);
+  color: var(--bg-page);
+  border-color: var(--bg-dark);
+}
+
+/* ==========================================================================
+   MAIN CONTENT AREA (NO SCROLL, ACCORDION/TAB PANES)
+   ========================================================================== */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.tab-pane {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  animation: fadeIn 0.2s var(--ease);
+}
+
+.tab-pane.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Pane Stack Container (For tabs 2, 3, 4) */
+.pane-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   TAB 1: AVALANCHE COMPARISON COMPONENTS
+   ========================================================================== */
+.inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.input-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-main);
+}
+
+.char-badge {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.text-box {
+  width: 100%;
+  padding: 6px 10px;
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-main);
+  outline: none;
+  resize: none;
+  line-height: 1.4;
+  transition: border-color var(--trans), box-shadow var(--trans);
+}
+
+.text-box:focus {
+  border-color: var(--border-dark);
+  box-shadow: 0 0 0 1px var(--border-dark);
+}
+
+/* Action Buttons */
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--trans);
+  user-select: none;
+}
+
+.action-btn:hover {
+  background-color: var(--bg-card);
+  border-color: var(--border-medium);
+  transform: translateY(-1px);
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+.live-calc-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.primary-btn {
+  background-color: var(--bg-dark);
+  color: var(--bg-page);
+  border: 1px solid var(--bg-dark);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--trans);
+}
+
+.primary-btn:hover {
+  background-color: #262626;
+  transform: translateY(-1px);
+}
+
+.primary-btn:active {
+  transform: scale(0.98);
+}
+
+/* Clarity Verdict Banner */
+.verdict-banner {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 8px 14px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.verdict-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.verdict-col.divider {
+  border-left: 1px solid var(--border-light);
+  padding-left: 16px;
+  margin-left: 12px;
+}
+
+.verdict-sub {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.verdict-main {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+.verdict-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-dark);
+  color: var(--bg-page);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* Smooth Progress Bar */
+.progress-container {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.progress-track {
+  height: 6px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  position: relative;
+  overflow: visible;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-pill);
+  transition: width 0.35s var(--ease);
+}
+
+.progress-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 50%;
+  width: 2px;
+  background-color: var(--bg-dark);
+}
+
+.progress-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+.marker-text {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* 192-Bit Matrix Card (Fills remaining height) */
+.matrix-card {
+  flex: 1;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 180px;
+}
+
+.matrix-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.matrix-title {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.matrix-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-left: 8px;
+}
+
+.inspector-box {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.inspector-box strong {
+  color: var(--text-main);
+  font-family: var(--font-mono);
+}
+
+.matrix-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 3px;
+  padding: 8px;
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.matrix-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: transform var(--trans), background-color var(--trans);
+}
+
+.matrix-cell:hover {
+  transform: scale(1.4);
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.matrix-cell.diff {
+  background-color: var(--bg-dark);
+  color: var(--bg-page);
+  border: 1px solid var(--bg-dark);
+}
+
+.matrix-cell.same {
+  background-color: var(--bg-page);
+  color: #CCCCCC;
+  border: 1px solid var(--border-light);
+}
+
+/* ==========================================================================
+   TAB 2: HASHES AND BINARY
+   ========================================================================== */
+.info-block {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.block-header {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.hash-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hash-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-dark);
+  color: var(--bg-page);
+  flex-shrink: 0;
+}
+
+.hash-code {
+  flex: 1;
+  font-size: 12px;
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.copy-btn {
+  font-size: 11px;
+  padding: 5px 10px;
+}
+
+.bit-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.bit-label {
+  width: 70px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.bit-text {
+  flex: 1;
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   TAB 3 & 4: TABLES & CONTROLS
+   ========================================================================== */
+.controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.num-input {
+  width: 90px;
+  padding: 5px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background-color: var(--bg-page);
+  outline: none;
+}
+
+.stats-summary-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.test-overall-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+}
+
+.table-container {
+  flex: 1;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: auto;
+  background-color: var(--bg-page);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.data-table td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  color: var(--text-main);
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table th:last-child,
+.data-table td:last-child {
+  border-right: none;
+}
+
+.data-table tbody tr:hover td {
+  background-color: var(--bg-card);
+}
+
+.badge-pass {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-dark);
+  color: var(--bg-page);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.badge-fail {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--bg-dark);
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   FOOTER (COMPACT, FIXED AT BOTTOM OF VIEWPORT)
+   ========================================================================== */
+.app-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-light);
+  padding-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-dim);
+}
